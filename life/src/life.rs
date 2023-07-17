@@ -35,3 +35,4 @@ pub fn life(fb: &mut [[u8; 5]; 5]) {
         }
     }
 }
+
