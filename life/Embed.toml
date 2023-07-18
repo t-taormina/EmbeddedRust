@@ -9,3 +9,6 @@ enabled = false
 
 [default.gdb]
 enabled = true 
+
+[features]
+v2 = ["microbit-v2"]

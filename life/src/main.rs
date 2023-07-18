@@ -9,20 +9,18 @@ use microbit::{
     display::blocking::Display,
     hal::{
         prelude::*,
-        pac::TIMER1,
         timer::Timer,
     },
 };
 
-use nanorand::{pcg64::Pcg64, Rng, SeedableRng};
+use nanorand::{pcg64::Pcg64, Rng};
 use panic_halt as _;
 mod life;
 use life::*;
 
-
 pub fn random(fb: &mut [[u8; 5]; 5], fr: u128) {
     let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr);
-    let mut b: bool = rng.generate();
+    let mut b: bool;
 
     for row in 0..5 {
         for col in 0..5 {
@@ -53,13 +51,12 @@ fn main() -> ! {
     let mut frames = 0;
     let mut b_sleep = 0;
     let mut no_life_fr = 0;
-    let board = Board::take().unwrap();
     let mut display = Display::new(board.display_pins);
     let mut timer = Timer::new(board.TIMER1);
 
+    let board = Board::take().unwrap();
     let button_a = board.buttons.button_a.into_pullup_input();
     let button_b = board.buttons.button_b.into_pullup_input();
-
 
     let mut led: [[u8; 5]; 5] = [
         [0, 0, 0, 0, 0],
@@ -74,12 +71,14 @@ fn main() -> ! {
     loop {
         if button_a.is_low().unwrap() {
             random(& mut led, frames);
+            no_life_fr = 0;
         }
 
         else if button_b.is_low().unwrap() {
             if b_sleep > 5 {
                 complement(& mut led);
                 b_sleep = 0;
+                no_life_fr = 0;
             }
         }
 
