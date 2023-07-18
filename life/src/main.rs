@@ -106,6 +106,5 @@ fn main() -> ! {
         } else {
             b_sleep = 6;
         }
-        timer.delay_ms(100_u32);
-        }
+    }
 }
