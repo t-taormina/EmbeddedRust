@@ -51,10 +51,10 @@ fn main() -> ! {
     let mut frames = 0;
     let mut b_sleep = 0;
     let mut no_life_fr = 0;
-    let mut display = Display::new(board.display_pins);
-    let mut timer = Timer::new(board.TIMER1);
 
     let board = Board::take().unwrap();
+    let mut display = Display::new(board.display_pins);
+    let mut timer = Timer::new(board.TIMER1);
     let button_a = board.buttons.button_a.into_pullup_input();
     let button_b = board.buttons.button_b.into_pullup_input();
 
