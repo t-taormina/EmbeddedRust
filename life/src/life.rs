@@ -1,3 +1,5 @@
+use nanorand::{pcg64::Pcg64, Rng};
+
 /// Return `true` iff all cells are off.
 pub fn done(fb: &[[u8; 5]; 5]) -> bool {
     fb.iter().all(|&row| row.iter().all(|&v| v == 0))
@@ -36,3 +38,32 @@ pub fn life(fb: &mut [[u8; 5]; 5]) {
     }
 }
 
+// Fills array with random 1's and 0's 
+pub fn random(fb: &mut [[u8; 5]; 5], fr: u128) {
+    let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr * 13);
+    let mut b: bool;
+
+    for row in 0..5 {
+        for col in 0..5 {
+            b = rng.generate();
+            if b {
+                fb[row][col] = 1
+            } else {
+                fb[row][col] = 0
+            }
+        }
+    }
+}
+
+// Flips all values in the array
+pub fn complement(fb: &mut [[u8; 5]; 5]) {
+    for row in 0..5 {
+        for col in 0..5 {
+            if fb[row][col] == 1 {
+                fb[row][col] = 0
+            } else {
+                fb[row][col] = 1
+            }
+        }
+    }
+}

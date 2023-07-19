@@ -13,44 +13,69 @@ use microbit::{
     },
 };
 
-use nanorand::{pcg64::Pcg64, Rng};
 use panic_halt as _;
 mod life;
 use life::*;
 
-pub fn random(fb: &mut [[u8; 5]; 5], fr: u128) {
-    let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr);
-    let mut b: bool;
+enum State {
+    RUNNING,
+    DONE(Frames),
+    COMPLEMENT,
+    RANDOM,
+}
 
-    for row in 0..5 {
-        for col in 0..5 {
-            b = rng.generate();
-            if b {
-                fb[row][col] = 1
-            } else {
-                fb[row][col] = 0
-            }
+enum Frames {
+    ZERO,
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+}
+
+fn decrement(frame: Frames) -> Frames {
+    match frame {
+        Frames::FIVE => Frames::FOUR,
+        Frames::FOUR => Frames::THREE,
+        Frames::THREE => Frames::TWO,
+        Frames::TWO => Frames::ONE,
+        _ => Frames::ZERO,
+    }
+}
+
+struct StateMachine {
+    state: State,
+    random: u128,
+    led: [[u8; 5]; 5],
+    complement_sleep: u8,
+}
+
+impl StateMachine {
+    pub fn new() -> Self {
+        StateMachine {
+            state: State::RANDOM,
+            random: 1,
+            led: [[0; 5]; 5],
+            complement_sleep: 0,
+        }
+    }
+
+    pub fn check_counters(&mut self) {
+
+        if self.random > 100000 {
+            self.random = 1;
+        } else {
+            self.random += 1;
+        }
+        if self.complement_sleep < 6 {
+            self.complement_sleep += 1;
         }
     }
 }
 
-pub fn complement(fb: &mut [[u8; 5]; 5]) {
-    for row in 0..5 {
-        for col in 0..5 {
-            if fb[row][col] == 1 {
-                fb[row][col] = 0
-            } else {
-                fb[row][col] = 1
-            }
-        }
-    }
-}
 
 #[entry]
 fn main() -> ! {
-    let mut frames = 0;
-    let mut b_sleep = 0;
-    let mut no_life_fr = 0;
 
     let board = Board::take().unwrap();
     let mut display = Display::new(board.display_pins);
@@ -58,53 +83,48 @@ fn main() -> ! {
     let button_a = board.buttons.button_a.into_pullup_input();
     let button_b = board.buttons.button_b.into_pullup_input();
 
-    let mut led: [[u8; 5]; 5] = [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-    ];
-
-    random(& mut led, frames);
+    let mut state_machine = StateMachine::new();
 
     loop {
-        if button_a.is_low().unwrap() {
-            random(& mut led, frames);
-            no_life_fr = 0;
+        let (ba, bb) = (button_a.is_low().unwrap(), button_b.is_low().unwrap());
+
+        match (ba, bb) {
+            (true, _) => state_machine.state = State::RANDOM,
+            (_, true) => state_machine.state = State::COMPLEMENT,
+            (false, false) => state_machine.state = state_machine.state,
         }
 
-        else if button_b.is_low().unwrap() {
-            if b_sleep > 5 {
-                complement(& mut led);
-                b_sleep = 0;
-                no_life_fr = 0;
+        state_machine.state = match state_machine.state {
+            State::RANDOM => {
+                random(& mut state_machine.led, state_machine.random);
+                State::RUNNING
             }
-        }
-
-        else if done(& mut led) {
-            no_life_fr += 1;
-            if no_life_fr > 5 {
-                random(& mut led, frames);
-                no_life_fr = 0;
+            State::RUNNING => {
+                if done(&mut state_machine.led) {
+                    State::DONE(Frames::FIVE)
+                } else {
+                    life(&mut state_machine.led);
+                    State::RUNNING
+                }
             }
-        }
+            State::DONE(fr) => {
+                match fr {
+                    Frames::ZERO => State::RANDOM,
+                    _ => {
+                        State::DONE(decrement(fr))
+                    }
+                }
+            }
+            State::COMPLEMENT => {
+                if state_machine.complement_sleep > 5 { 
+                    complement(& mut state_machine.led);
+                    state_machine.complement_sleep = 0;
+                }
+                State::RUNNING
+            }
+        };
 
-        else {
-            life(& mut led);
-        }
-        display.show(&mut timer, led, 100);
-        // clear the display again
-        //display.clear();
-        if frames > 100000 {
-            frames = 1;
-        } else {
-            frames += 1;
-        }
-        if b_sleep < 20 {
-            b_sleep += 1;
-        } else {
-            b_sleep = 6;
-        }
+        display.show(&mut timer, state_machine.led, 100);
+        state_machine.check_counters();
     }
 }
