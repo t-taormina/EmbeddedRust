@@ -3,19 +3,14 @@
 #![no_std]
 
 use cortex_m_rt::entry;
-#[rustfmt::skip]
-use microbit::{
-    board::Board,
-    display::blocking::Display,
-    hal::{
-        prelude::*,
-        timer::Timer,
-    },
+
+use microbit::{ board::Board, display::blocking::Display,
+    hal::{ prelude::*, timer::Timer },
 };
 
 use panic_halt as _;
-mod life;
-use life::*;
+mod life; use life::*;
+
 
 enum State {
     RUNNING,
@@ -61,7 +56,6 @@ impl StateMachine {
     }
 
     pub fn check_counters(&mut self) {
-
         if self.random > 100000 {
             self.random = 1;
         } else {
@@ -73,10 +67,8 @@ impl StateMachine {
     }
 }
 
-
 #[entry]
 fn main() -> ! {
-
     let board = Board::take().unwrap();
     let mut display = Display::new(board.display_pins);
     let mut timer = Timer::new(board.TIMER1);
@@ -87,7 +79,6 @@ fn main() -> ! {
 
     loop {
         let (ba, bb) = (button_a.is_low().unwrap(), button_b.is_low().unwrap());
-
         match (ba, bb) {
             (true, _) => state_machine.state = State::RANDOM,
             (_, true) => state_machine.state = State::COMPLEMENT,
