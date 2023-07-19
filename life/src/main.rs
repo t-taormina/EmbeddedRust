@@ -9,7 +9,8 @@ use microbit::{ board::Board, display::blocking::Display,
 };
 
 use panic_halt as _;
-mod life; use life::*;
+mod life;
+use life::*;
 
 
 enum State {
