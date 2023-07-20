@@ -40,7 +40,7 @@ pub fn life(fb: &mut [[u8; 5]; 5]) {
 
 // Fills array with random 1's and 0's 
 pub fn random(fb: &mut [[u8; 5]; 5], fr: u128) {
-    let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr * 13);
+    let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr * 11);
     let mut b: bool;
 
     for row in 0..5 {

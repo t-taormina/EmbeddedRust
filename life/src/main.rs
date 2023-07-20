@@ -50,7 +50,7 @@ impl StateMachine {
     pub fn new() -> Self {
         StateMachine {
             state: State::RANDOM,
-            random: 1,
+            random: 3,
             led: [[0; 5]; 5],
             complement_sleep: 0,
         }
