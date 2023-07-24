@@ -1,3 +1,11 @@
+/*     
+ *  Tyler Taormina
+ *  taormina@pdx.edu
+ *
+ *  Game of Life on Microbit-V2 
+ *  CS410 - Embedded Rust
+*/
+
 #![deny(unsafe_code)]
 #![no_main]
 #![no_std]
@@ -60,7 +68,7 @@ impl StateMachine {
         if self.random > 100000 {
             self.random = 1;
         } else {
-            self.random += 1;
+            self.random += 3;
         }
         if self.complement_sleep < 6 {
             self.complement_sleep += 1;
