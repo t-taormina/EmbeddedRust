@@ -1,10 +1,8 @@
-/*
- *  Tyler Taormina
- *  taormina@pdx.edu
- *
- *  Game of Life on Microbit-V2
- *  CS410 - Embedded Rust
-*/
+//   Tyler Taormina
+//   taormina@pdx.edu
+ 
+//   Game of Life on Microbit-V2 
+//   CS410 - Embedded Rust
 
 #![deny(unsafe_code)]
 #![no_main]
@@ -12,15 +10,14 @@
 
 use cortex_m_rt::entry;
 
-use microbit::{
-    board::Board,
-    display::blocking::Display,
-    hal::{prelude::*, timer::Timer},
+use microbit::{ board::Board, display::blocking::Display,
+    hal::{ prelude::*, timer::Timer },
 };
 
 use panic_halt as _;
 mod life;
 use life::*;
+
 
 enum State {
     RUNNING,
@@ -97,7 +94,7 @@ fn main() -> ! {
 
         state_machine.state = match state_machine.state {
             State::RANDOM => {
-                random(&mut state_machine.led, state_machine.random);
+                random(& mut state_machine.led, state_machine.random);
                 State::RUNNING
             }
             State::RUNNING => {
@@ -108,13 +105,17 @@ fn main() -> ! {
                     State::RUNNING
                 }
             }
-            State::DONE(fr) => match fr {
-                Frames::ZERO => State::RANDOM,
-                _ => State::DONE(decrement(fr)),
-            },
+            State::DONE(fr) => {
+                match fr {
+                    Frames::ZERO => State::RANDOM,
+                    _ => {
+                        State::DONE(decrement(fr))
+                    }
+                }
+            }
             State::COMPLEMENT => {
-                if state_machine.complement_sleep > 5 {
-                    complement(&mut state_machine.led);
+                if state_machine.complement_sleep > 5 { 
+                    complement(& mut state_machine.led);
                     state_machine.complement_sleep = 0;
                 }
                 State::RUNNING
