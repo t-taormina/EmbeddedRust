@@ -4,6 +4,11 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Tyler Taormina <taormina@pdx.edu>"]
 
+[[bin]]
+name = "life"
+test = false
+bench = false
+
 [dependencies]
 #cortex-m = "0.7.3"
 cortex-m-rt = "0.7.0"

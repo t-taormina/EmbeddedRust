@@ -1,8 +1,8 @@
-/*     
+/*
  *  Tyler Taormina
  *  taormina@pdx.edu
  *
- *  Game of Life on Microbit-V2 
+ *  Game of Life on Microbit-V2
  *  CS410 - Embedded Rust
  *
  *  Credits: Bart Massey, Casey Bailey
@@ -34,10 +34,7 @@ pub fn life(fb: &mut [[u8; 5]; 5]) {
                 (next_row, col),
                 (next_row, next_col),
             ];
-            let neighbors = coords
-                .into_iter()
-                .map(|(r, c)| prev[r][c])
-                .sum();
+            let neighbors = coords.into_iter().map(|(r, c)| prev[r][c]).sum();
             #[allow(clippy::manual_range_contains)]
             match (prev[row][col], neighbors) {
                 (1, n) if n < 2 || n > 3 => fb[row][col] = 0,
@@ -48,7 +45,7 @@ pub fn life(fb: &mut [[u8; 5]; 5]) {
     }
 }
 
-// Fills array with random 1's and 0's 
+// Fills array with random 1's and 0's
 pub fn random(fb: &mut [[u8; 5]; 5], fr: u128) {
     let mut rng: Pcg64 = nanorand::Pcg64::new_seed(fr);
     let mut b: bool;
