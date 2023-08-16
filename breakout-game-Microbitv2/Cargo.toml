@@ -3,17 +3,17 @@ name = "breakout"
 version = "0.1.0"
 edition = "2021"
 
-[[bin]]
-name = "breakout"
-test = false
-bench = false
-
 [dependencies]
 cortex-m-rt = "0.7"
 embedded-hal = "0.2.7"
 libm = "0.2.7"
 microbit-v2 = "0.13.0"
 rtt-target = "0.4"
+
+[[bin]]
+name = "breakout"
+test = false
+bench = false
 
 [dependencies.panic-rtt-target]
 version = "0.1"
