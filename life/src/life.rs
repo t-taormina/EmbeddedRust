@@ -3,7 +3,6 @@
  *  taormina@pdx.edu
  *
  *  Game of Life on Microbit-V2
- *  CS410 - Embedded Rust
  *
  *  Credits: Bart Massey, Casey Bailey
 */
