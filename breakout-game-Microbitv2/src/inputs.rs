@@ -13,30 +13,42 @@ pub struct Inputs {
 }
 
 impl Inputs {
-    /// Set up to read buttons.
+    /// Set up to read buttons on board.
     pub fn new(buttons: Buttons) -> Self {
         Self {
             button_a: buttons.button_a.into_pullup_input(),
             button_b: buttons.button_b.into_pullup_input(),
-            value: 0.5,
+            value: -0.1,
         }
     }
 
-    /// Read the buttons. Returns `Some` fraction 0.0..1.0 of
-    /// knob rotation if the knob is 0.3..0.7 full voltage,
-    /// clamping on the left and right. However, returns
-    /// `None` if the knob is less than 0.1 full voltage.
+    /// Read the buttons. Returns `Some` fraction 0.0..1.0.
+    /// However returns `None` if the button value is set to default
+    /// of -0.1. Button <a> presses decrease self.value and button <b>
+    /// presses increase self.value
     pub fn read(&mut self) -> Option<f32> {
         let (ba, bb) = (
             self.button_a.is_low().unwrap(),
             self.button_b.is_low().unwrap(),
         );
         match (ba, bb) {
-            (true, _) => self.value -= 0.1,
-            (_, true) => self.value += 0.1,
+            (true, _) => {
+                if self.value < 0.0 {
+                    self.value = 0.4
+                } else {
+                    self.value -= 0.08;
+                }
+            }
+            (_, true) => {
+                if self.value < 0.0 {
+                    self.value = 0.6
+                } else {
+                    self.value += 0.08;
+                }
+            }
             (false, false) => self.value = self.value,
         }
-        if self.value == 0.5 {
+        if self.value < 0.0 {
             None
         } else {
             self.value = self.value.clamp(0.0, 1.0);

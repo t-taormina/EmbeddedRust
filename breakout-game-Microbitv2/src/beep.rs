@@ -9,6 +9,7 @@ pub const BEEP_PERIOD: u16 = 2000;
 
 /// Length of beep in cycles.
 pub const BEEP_TIME: u32 = 20;
+pub const LONG_BEEP_TIME: u32 = 80;
 
 /// Macro for declaring the stuff needed for beeping.
 ///
@@ -108,6 +109,16 @@ pub fn beep() {
     cortex_m::interrupt::free(|cs| {
         if let Some(b) = BEEP.borrow(cs).borrow_mut().as_mut() {
             b.note_time = BEEP_TIME;
+            b.beep_timer.start(BEEP_PERIOD / 2);
+        }
+    });
+}
+
+pub fn long_beep() {
+    use embedded_hal::prelude::*;
+    cortex_m::interrupt::free(|cs| {
+        if let Some(b) = BEEP.borrow(cs).borrow_mut().as_mut() {
+            b.note_time = LONG_BEEP_TIME;
             b.beep_timer.start(BEEP_PERIOD / 2);
         }
     });

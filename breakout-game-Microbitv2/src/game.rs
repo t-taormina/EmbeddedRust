@@ -68,7 +68,13 @@ impl GameState {
     /// Otherwise, the knob position is given as a fraction
     /// of display width 0..1. Returns `true` if the game is
     /// over, and `false` otherwise.
-    pub fn step(&mut self, raster: &mut Raster, knob: Option<f32>, button: Option<f32>) -> bool {
+    pub fn step(
+        &mut self,
+        raster: &mut Raster,
+        knob: Option<f32>,
+        button: Option<f32>,
+        delay: &mut Timer<TIMER1>,
+    ) -> bool {
         // Move the ball.
         let coords = self
             .ball_position
@@ -97,8 +103,12 @@ impl GameState {
         // Handle bounces, lost balls, etc.
         let [ref mut dr, ref mut dc] = self.ball_direction;
         let ball_count = self.ball_count;
-        if (knob.is_some() || button.is_some()) && r > 4.25 && *dr > 0.0 {
+        if (knob.is_some() || button.is_some()) && r > 4.9 && *dr > 0.0 {
             // Lost the ball.
+            beep();
+            delay.delay_ms(120u16);
+            long_beep(); // replace with informative screen
+            delay.delay_ms(512u16);
             if self.ball_count > 0 {
                 self.ball_count -= 1;
             } else {
@@ -113,7 +123,8 @@ impl GameState {
             self.blocks[uc] -= 1;
             *dr = -*dr;
             beep();
-        } else if r < 1.5 && *dr > 0.0 && fabsf(pp - c) < 0.5 * pw {
+        } else if (3.9..=4.9).contains(&r) && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
+            // } else if r < 1.5 && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
             // Paddle bounce.
             *dr = -*dr;
         }
@@ -140,7 +151,8 @@ impl GameState {
                 raster[1][c] = 5;
             }
 
-            if fabsf(c as f32 - pp) < 0.5 * pw {
+            if fabsf(pp - c as f32) < 0.5 * pw {
+                // if fabsf(c as f32 - pp) < 0.5 * pw {
                 raster[4][c] = 9;
             }
         }

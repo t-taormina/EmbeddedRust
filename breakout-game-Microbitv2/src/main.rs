@@ -9,7 +9,7 @@ mod game;
 mod inputs;
 mod knob;
 
-use beep::{beep, BEEP_PERIOD};
+use beep::{beep, long_beep, BEEP_PERIOD};
 use display::{display_frame, Raster};
 use game::GameState;
 use inputs::Inputs;
@@ -24,7 +24,7 @@ use cortex_m_rt::entry;
 use microbit::{
     board::Board,
     hal::{prelude::*, Timer},
-    pac::{interrupt, TIMER0, TIMER2},
+    pac::{interrupt, TIMER0, TIMER1, TIMER2},
 };
 
 microbit_display!(TIMER0);
@@ -60,7 +60,7 @@ fn main() -> ! {
         let mut raster = Raster::default();
         let k = knob.read();
         let b = buttons.read();
-        if game.step(&mut raster, k, b) {
+        if game.step(&mut raster, k, b, &mut delay) {
             beep();
             delay.delay_ms(120u16);
             beep();
