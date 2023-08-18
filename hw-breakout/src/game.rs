@@ -118,6 +118,7 @@ impl GameState {
         } else if !(0.001..=4.999).contains(&r) {
             // Top or bottom edge bounce.
             *dr = -*dr;
+            short_beep();
         } else if ur == 1 && self.blocks[uc] > 0 {
             // Block hit.
             self.blocks[uc] -= 1;
@@ -127,10 +128,12 @@ impl GameState {
             // } else if r < 1.5 && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
             // Paddle bounce.
             *dr = -*dr;
+            short_beep();
         }
         if !(0.001..=4.999).contains(&c) {
             // Left or right edge bounce.
             *dc = -*dc;
+            short_beep();
         }
         if ball_count == self.ball_count {
             // Record ball position and render ball.

@@ -4,15 +4,15 @@
 #![no_std]
 
 mod beep;
+mod button;
 mod display;
 mod game;
-mod inputs;
 mod knob;
 
-use beep::{beep, long_beep, BEEP_PERIOD};
+use beep::{beep, long_beep, short_beep, BEEP_PERIOD};
+use button::Button;
 use display::{display_frame, Raster};
 use game::GameState;
-use inputs::Inputs;
 use knob::Knob;
 
 use panic_rtt_target as _;
@@ -49,7 +49,7 @@ fn main() -> ! {
     init_display(display_timer, display_pins);
     init_beep(beep_timer, speaker_pin.degrade());
     let knob = Knob::new(saadc, knob_pin);
-    let mut buttons: Inputs = Inputs::new(buttons);
+    let mut buttons: Button = Button::new(buttons);
 
     // Tick time in milliseconds.
     let tick = 50;

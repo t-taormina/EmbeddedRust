@@ -6,13 +6,13 @@ use microbit::board::Buttons;
 use microbit::hal::gpio::{p0::P0_14, p0::P0_23, Input, PullUp};
 
 /// Material needed for doing button reads.
-pub struct Inputs {
+pub struct Button {
     button_a: P0_14<Input<PullUp>>,
     button_b: P0_23<Input<PullUp>>,
     value: f32,
 }
 
-impl Inputs {
+impl Button {
     /// Set up to read buttons on board.
     pub fn new(buttons: Buttons) -> Self {
         Self {
