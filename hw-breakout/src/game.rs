@@ -103,10 +103,8 @@ impl GameState {
         // Handle bounces, lost balls, etc.
         let [ref mut dr, ref mut dc] = self.ball_direction;
         let ball_count = self.ball_count;
-        if (knob.is_some() || button.is_some()) && r > 4.9 && *dr > 0.0 {
+        if (knob.is_some() || button.is_some()) && r > 4.3 && *dr > 0.0 {
             // Lost the ball.
-            beep();
-            delay.delay_ms(120u16);
             long_beep(); // replace with informative screen
             delay.delay_ms(512u16);
             if self.ball_count > 0 {
@@ -124,7 +122,7 @@ impl GameState {
             self.blocks[uc] -= 1;
             *dr = -*dr;
             beep();
-        } else if (3.9..=4.9).contains(&r) && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
+        } else if (3.9..=4.3).contains(&r) && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
             // } else if r < 1.5 && *dr > 0.0 && fabsf(pp - c as f32) < 0.5 * pw {
             // Paddle bounce.
             *dr = -*dr;
